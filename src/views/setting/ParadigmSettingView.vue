@@ -17,14 +17,21 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import ParadigmAditDrawer from './ParadigmAditDrawer.vue';
-import ContentWrapper from '../../components/ContentWrapper.vue'
+import ContentWrapper from '../../components/ContentWrapper.vue';
+import { useStore } from '../../store';
 const open = ref<boolean> (false);
 interface dataInfo {
     key: string,
     name: string,
-    info?: string
+    info?: string,
+    
 
 }
+const usestore = useStore();
+var a:dataInfo[] = [];
+usestore.paradigm.forEach((element, index) => {
+    a.push({key: (index+1).toString(),name: element.name, info: element.description});
+});
 const columns = [
     {
         title: '名称',
@@ -45,23 +52,25 @@ const columns = [
 
 ];
 
-const data = ref<dataInfo[]>([
-  {
-    key: '1',
-    name: 'RSVP',
-    info: '快速序列视觉呈现范式',
-  },
-  {
-    key: '2',
-    name: 'SSVEP',
-    info: ''
-  },
-  {
-    key: '3',
-    name: 'MI',
-    info: '运动想象'
-  }
-])
+// const data = ref<dataInfo[]>([
+//   {
+//     key: '1',
+//     name: 'RSVP',
+//     info: '快速序列视觉呈现范式',
+//   },
+//   {
+//     key: '2',
+//     name: 'SSVEP',
+//     info: ''
+//   },
+//   {
+//     key: '3',
+//     name: 'MI',
+//     info: '运动想象'
+//   }
+// ])
+
+const data = ref<dataInfo[]>(a);
 
 function aditClick(data: dataInfo){
     open.value = true;
@@ -78,6 +87,7 @@ function closeDrawer(){
 function okDrawer(){
     open.value = false;
 }
+
 </script>
 
 <style scoped>

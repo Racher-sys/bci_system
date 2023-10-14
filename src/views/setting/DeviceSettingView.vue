@@ -12,25 +12,41 @@
                     <a-divider type="vertical" />
                     <a>测试<CaretRightFilled style="color: rgb(127, 200, 255); width: 30px;"/></a> 
                 </template>
+                
             </template>
         </a-table>
     </ContentWrapper>
 
-    <DeviceAditDrawer :open="open" @close="closeDrawer" @ok="okDrawer"/>
+    <DeviceAditDrawer :open="open" @close="closeDrawer" @ok="okDrawer" :record="currentRecord"/>
     
 </template>
 <script setup lang="ts">
 import {CaretRightFilled} from '@ant-design/icons-vue';
 import DeviceAditDrawer from './DeviceAditDrawer.vue';
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 import ContentWrapper from '../../components/ContentWrapper.vue';
-interface dataInfo {
-    key: string,
-    name: string,
-    info?: string
+import {useStore} from '../../store/index';
+import { DataInfo } from '../../types/store';
+import {DeviceValue} from '../../types/store';
+import { stringType } from 'ant-design-vue/es/_util/type';
 
-}
+
 const open = ref<boolean> (false);
+const currentRecord = ref<DataInfo>({
+    key: '',
+    name: '',
+    IPSend: '',
+    portSend:'',
+    IPReceive: '',
+    protReceive: '',
+    description: '',
+});
+const usestore = useStore();
+
+let a:DataInfo[] = usestore.device.map((element, index) => {
+    return {key: (index + 1).toString(),...element};
+});
+
 const columns = [
     {
         title: '设备名称',
@@ -40,53 +56,63 @@ const columns = [
     },
     {
         title: '设备信息',
-        dataIndex: 'info',
-        key: 'info'
+        dataIndex: 'description',
+        key: 'description'
     },
     {
         title: '操作',
         key: 'action',
         width: '30%'
     },
-
 ];
 
-const data = ref<dataInfo[]>([
-  {
-    key: '1',
-    name: 'NeuroScan',
-    info: '64位电极帽',
-  },
-  {
-    key: '2',
-    name: 'iView X',
-    info: '眼动仪'
-  },
-  {
-    key: '3',
-    name: 'DSI-24',
-    info: '干电极脑电帽'
-  }
-])
+const data = ref<DataInfo[]>(a);
 
 function addClick(){
     open.value = true;
+    currentRecord.value = {
+    key: '',
+    name: '',
+    IPSend: '',
+    portSend:'',
+    IPReceive: '',
+    protReceive: '',
+    description: '',
+ }
 }
 
-function aditClick(data: dataInfo){
+// 编辑设备
+function aditClick(data: DataInfo){
     open.value = true;
-    console.log(data);
+    currentRecord.value = data;
+    let {key, ...curData} = data;
+    usestore.aditDevice(curData);
 }
 function deleteClick(index: number){
+    console.log(data.value[index].name);
+    usestore.deleteDevice(data.value[index].name);
     data.value.splice(index, 1);
-    console.log(index);
 }
+
 function closeDrawer(){
     open.value = false;
 }
-function okDrawer(){
+function okDrawer(data: DataInfo){
+    let {key, ...curData} = data
     open.value = false;
+    usestore.aditDevice(curData);
 }
+
+// 监听open的变化
+watch(open, (value) => {
+    if(value === false) {
+        // 重新刷新一下表单中的数
+        data.value = usestore.device.map((element, index) => {
+            console.log(element);
+            return {key: (index + 1).toString(), ...element}
+        })
+    }
+})
 </script>
 
 <style scoped>

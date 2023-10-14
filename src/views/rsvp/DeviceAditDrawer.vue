@@ -2,7 +2,7 @@
 <a-drawer title="编辑" :open="open" placement="right" :closable="false" width="500px">
     <!-- 加入一个表单 -->
     <a-form v-bind="formItemLayout">
-        <a-form-item label="设备名称" >
+        <a-form-item label="设备名称">
             <a-input v-model:value="values.name"/>
         </a-form-item>
         <a-form-item label="IP地址(发送)">
@@ -42,12 +42,9 @@ const props =  defineProps({
         type: Object as PropType<DataInfo>,
     } 
 });
-
 const values = ref<DataInfo>();
 
 
-
-// const values = computed (() => props.record);
 defineEmits(['close', 'ok']);
 const formItemLayout = {
     labelCol: {
@@ -60,17 +57,11 @@ const formItemLayout = {
     },
 };
 
-// onBeforeUpdate(() => {
-//     console.log('抽屉组件更新了！！！');
-//     console.log(props.record);
-//     values.value = JSON.parse(JSON.stringify(props.record));
-
-// })
-
-watch(() => props.record, (newValue) => {
-    values.value = JSON.parse(JSON.stringify(newValue));
-    console.log('newValue', newValue);
-    // console.log(values)
+// 打开就直接刷新就可以了。
+watch(() => props.open, (newValue) => {
+    if (newValue == true){
+        values.value = JSON.parse(JSON.stringify(props.record));
+    }
 })
 
 </script>

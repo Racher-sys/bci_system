@@ -7,17 +7,17 @@ interface ICommon{
     mp: any
 }
 
-const hyRequest1 = new HyRequest({
+export const hyRequest1 = new HyRequest({
     baseURL: BASE_URL,
     timeout: TIME_OUT,
     interceptors: {}
 })
 
-hyRequest1.get<ICommon>({
-    url: '/mv/detail',
-    params: {mvid: 5436712}
-}).then(res => {
-    console.log(res.data);
-}).catch(err => {
-    console.log(err);
-})
+// hyRequest1.get<ICommon>({
+//     url: '',
+//     params: {mvid: 5436712}
+// }).then(res => {
+//     console.log(res.data);
+// }).catch(err => {
+//     console.log(err);
+// })

@@ -28,50 +28,62 @@
        </a-list>
        <a-button class="btn" type="primary" @click="startClick" >开始实验</a-button>
     </div>
-    
-   
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { rsvpStore, useStore } from '../../store';
 const router = useRouter();
+const rsvpstore = rsvpStore();
+const usestore = useStore();
 
 interface DataItem {
     name: string,
     info?: string
 }
+// const listDevice = ref<DataItem[]>([
+//     {
+//         name: 'NeuroScan',
+//         info: 'IP: 10.1.21.53  Port: 4000'
+//     },
+//     {
+//         name: 'iViewX',
+//         info: 'SendIP: 10.1.21.53  SendPort: 4000 \n  ReceiveIP: 10.1.21.53  ReceivePort: 5000'
+//     }
+// ])
 
-const listDevice = ref<DataItem[]>([
-    {
-        name: 'NeuroScan',
-        info: 'IP: 10.1.21.53  Port: 4000'
-    },
-    {
-        name: 'iViewX',
-        info: 'SendIP: 10.1.21.53  SendPort: 4000 \n  ReceiveIP: 10.1.21.53  ReceivePort: 5000'
+const listDevice = ref<DataItem[]>([]);
+
+usestore.device.forEach((element) => {
+    if (typeof(rsvpstore.currentDevice.find((name) => name === element.name)) !== 'undefined') {
+        let s = `IPSend: ${element['IPSend']}  portSend: ${element['portSend']}`;
+        if (element['IPReceive'] && element['IPReceive'].length > 0) s += `\n  ReceiveIP: ${element['IPReceive']}  ReceivePort: ${element['protReceive']}`;
+        listDevice.value.push({name: element.name, info: s});
     }
-])
+})
+
+
 
 const listExpInfo = ref<DataItem[]>([
     {
         name: '目标类型',
-        info: '飞机'
+        info: rsvpstore.info.targetType
     },
     {
         name: '图片呈现时间',
-        info: '500ms'
+        info: `${rsvpstore.info.frequent} ms`
     },
     {
         name: '算法模型',
-        info: 'EEGNet'
+        info: rsvpstore.info.algorithm
     }
 ])
 
-
-
 function startClick(){
+    // window.open('https://www.baidu.com', '_blank');
     router.push({name: 'RsvpExp'});
+    // router.push({name: 'RsvpImageShow'});
 }
 
 </script>
